@@ -11,3 +11,12 @@ body {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
       monospace;
   }
+
+  .App {
+    display: flex;
+  }
+
+  .pokemons-list,
+  .pokedex {
+    width: 50%;
+  }
