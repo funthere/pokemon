@@ -7,23 +7,50 @@ body {
     -moz-osx-font-smoothing: grayscale;
   }
 
-  code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-      monospace;
-  }
-
   .main {
     display: flex;
   }
 
+  .pokemons-list {
+    border-right: 1px solid;
+  }
+
   .pokemons-list,
   .pokedex {
+    padding: 0 10px 20px;
+    border-bottom: 1px solid;
+    flex-grow: 1;
     width: 50%;
-    padding: 0 50px 20px;
-    border: 1px solid;
   }
 
   .form-wrapper {
     margin-top: 20px;
     text-align: center;
+  }
+  h1 {
+    margin: 40px;
+    text-transform: uppercase;
+    text-align: center;
+    color: #089eca;
+    font-size: 3em;
+  }
+
+  ul {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+  li {
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    width: 33.33%;
+    font-size: 1.3rem;
+    color: #b48484;
+    margin-bottom: 10px;
+    transition: all .2s ease-in-out;
+  }
+  li:hover {
+    transform: scale(1.1);
   }
