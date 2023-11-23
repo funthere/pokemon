@@ -2,33 +2,23 @@ import React, { useContext } from 'react';
 import { PokemonContext } from './PokemonContext';
 
 const Pokedex = () => {
-    const {
-        pokemons,
-        setPokemons,
-        capturedPokemons,
-        setCapturedPokemons,
-      } = useContext(PokemonContext);
-
-      const releasePokemon = (releasedPokemon) =>
-        capturedPokemons.filter(pokemon => pokemon !== releasedPokemon)
-
-      const release = (pokemon) => () => {
-        setCapturedPokemons(releasePokemon(pokemon));
-        setPokemons([...pokemons, pokemon]);
-      }
+    const { state, release } = useContext(PokemonContext);
 
   return (
     <div className="pokedex">
       <h2>Pokedex</h2>
 
-      {capturedPokemons.map((pokemon) =>
-        <div key={`${pokemon.id}-${pokemon.name}`}>
-          <p>{pokemon.id}</p>
-          <div>
-            <span>{pokemon.name}</span>
-            <button onClick={release(pokemon)}>-</button>
-          </div>
-        </div>)}
+      <table>
+        <tr>
+          <th>Pokemon</th>
+          <th>Release</th>
+        </tr>
+        {state.capturedPokemons.map((pokemon) =>
+          <tr key={pokemon.name}>
+            <td><span>{pokemon.name}</span></td>
+            <td><button onClick={release(pokemon)}>-</button></td>
+          </tr>)}
+      </table>
     </div>
   )
 }

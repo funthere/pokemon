@@ -7,7 +7,7 @@ import { PokemonProvider } from './PokemonContext';
 const App = () => {
   return (
     <PokemonProvider>
-      <div className="App">
+      <div className="className">
         <PokemonsList />
         <Pokedex />
       </div>

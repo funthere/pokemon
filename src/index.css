@@ -12,11 +12,18 @@ body {
       monospace;
   }
 
-  .App {
+  .main {
     display: flex;
   }
 
   .pokemons-list,
   .pokedex {
     width: 50%;
+    padding: 0 50px 20px;
+    border: 1px solid;
+  }
+
+  .form-wrapper {
+    margin-top: 20px;
+    text-align: center;
   }

@@ -1,33 +1,36 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { PokemonContext } from './PokemonContext';
 
+const url = "https://pokeapi.co/api/v2/pokemon";
+
 const PokemonsList = () => {
-  const {
-    pokemons,
-    setPokemons,
-    capturedPokemons,
-    setCapturedPokemons
-  } = useContext(PokemonContext);
+  const { state, capture, addPokemons } = useContext(PokemonContext);
 
-  const removePokemonFromList = (removedPokemon) =>
-    pokemons.filter(pokemon => pokemon !== removedPokemon)
+  useEffect(() => {
+    const fetchPokemons = async () => {
+      const response = await fetch(url);
+      const data = await response.json();
+      addPokemons(data.results);
+    };
 
-  const capture = (pokemon) => () => {
-    setCapturedPokemons([...capturedPokemons, pokemon]);
-    setPokemons(removePokemonFromList(pokemon));
-  }
+    fetchPokemons();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="pokemons-list">
       <h2>Pokemons List</h2>
-      {pokemons.map((pokemon) =>
-        <div key={`${pokemon.id}-${pokemon.name}`}>
-          <p>{pokemon.id}</p>
-          <div>
-            <span>{pokemon.name}</span>
-            <button onClick={capture(pokemon)}>+</button>
-          </div>
-        </div>)}
+      <table>
+        <tr>
+          <th>Pokemon</th>
+          <th>Capture</th>
+        </tr>
+        {state.pokemons.map((pokemon) =>
+          <tr key={pokemon.name}>
+            <td><span>{pokemon.name}</span></td>
+            <td><button onClick={capture(pokemon)}>+</button></td>
+          </tr>)}
+      </table>
     </div>
   )
 }
