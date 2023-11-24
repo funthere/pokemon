@@ -26,6 +26,32 @@ app.get('/release-pokemon', (req, res) => {
     }
 });
 
+// Endpoint 3: REST API to rename Pokemon
+let fibonacciCounter = {};
+app.post('/rename-pokemon', (req, res) => {
+    const { pokemonName } = req.body;
+
+    if (!fibonacciCounter[pokemonName]) {
+      fibonacciCounter[pokemonName] = 0;
+    }
+
+    // Generate the new name with the Fibonacci sequence
+    const fibonacciSequence = generateFibonacci(fibonacciCounter[pokemonName]);
+    const newName = `${pokemonName}-${fibonacciSequence[fibonacciCounter[pokemonName]]}`;
+
+    fibonacciCounter[pokemonName]++;
+
+    res.json({ newName });
+});
+
+const generateFibonacci = (n) => {
+  const sequence = [0, 1];
+  for (let i = 2; i <= n; i++) {
+    sequence[i] = sequence[i - 1] + sequence[i - 2];
+  }
+  return sequence;
+};
+
 function isPrime(num) {
     if (num <= 1) return false;
     for (let i = 2; i <= Math.sqrt(num); i++) {
