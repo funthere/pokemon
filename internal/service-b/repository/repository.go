@@ -52,3 +52,9 @@ func (r *Repository) Fetch(page, size uint32) ([]SensorData, error) {
 	}
 	return data, nil
 }
+
+func (r *Repository) Save(value float64, typ, id1 string, id2 int, timestamp string) error {
+	query := "INSERT INTO sensor_data (value, type, id1, id2, timestamp) VALUES (?, ?, ?, ?, ?)"
+	_, err := r.db.Exec(query, value, typ, id1, id2, timestamp)
+	return err
+}

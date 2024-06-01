@@ -1,13 +1,29 @@
 package main
 
 import (
+	"log"
+
 	"github.com/funthere/pokemon/internal/service-a/handler"
+	"github.com/funthere/pokemon/internal/service-a/service"
+	pb "github.com/funthere/pokemon/proto"
 	"github.com/labstack/echo/v4"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func main() {
-	go handler.GenerateData()
+	// gRPC client
+	conn, err := grpc.NewClient("0.0.0.0:50051", grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
+	defer conn.Close()
+	client := pb.NewSensorServiceClient(conn)
 
+	// Generate sensor's data and send them to client
+	go service.GenerateData(client)
+
+	// Handle REST API
 	e := echo.New()
 	e.POST("/set-frequency", handler.SetFrequency)
 

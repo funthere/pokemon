@@ -1,9 +1,13 @@
 package service
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"math/rand"
 	"time"
+
+	pb "github.com/funthere/pokemon/proto"
 )
 
 type SensorData struct {
@@ -24,14 +28,22 @@ func GetFrequency() int {
 	return frequency
 }
 
-func GenerateSensorData() {
-	data := SensorData{
-		Value:     rand.Float64() * 100,
-		Type:      "temperature",
-		ID1:       "SENSOR_A",
-		ID2:       rand.Intn(100),
-		Timestamp: time.Now(),
+func GenerateData(client pb.SensorServiceClient) {
+	for {
+		data := &pb.SensorData{
+			Value:     rand.Float32() * 100,
+			Type:      "temperature",
+			Id1:       "SENSOR_A",
+			Id2:       int32(rand.Intn(100)),
+			Timestamp: time.Now().Format(time.RFC3339),
+		}
+
+		res, err := client.SendSensorData(context.Background(), data)
+		if err != nil {
+			log.Printf("could not send data: %v", err)
+		}
+
+		fmt.Printf("%+v ==> %s\n", data, res.GetStatus())
+		time.Sleep(time.Millisecond * time.Duration(GetFrequency()))
 	}
-	fmt.Println(fmt.Printf("%+v", data))
-	// Send data to Microservice B
 }

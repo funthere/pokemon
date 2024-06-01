@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package sensor;
+option go_package = "./proto/sensor";
+
+service SensorService {
+    rpc SendSensorData (SensorData) returns (SensorResponse);
+}
+
+message SensorData {
+    float value = 1;
+    string type = 2;
+    string id1 = 3;
+    int32 id2 = 4;
+    string timestamp = 5;
+}
+
+message SensorResponse {
+    string status = 1;
+}
