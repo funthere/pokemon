@@ -35,7 +35,7 @@ func GenerateData(client pb.SensorServiceClient) {
 			Type:      "temperature",
 			Id1:       "SENSOR_A",
 			Id2:       int32(rand.Intn(100)),
-			Timestamp: time.Now().Format(time.RFC3339),
+			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
 		}
 
 		res, err := client.SendSensorData(context.Background(), data)

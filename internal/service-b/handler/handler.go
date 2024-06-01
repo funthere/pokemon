@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/funthere/pokemon/helper"
@@ -32,6 +33,7 @@ type SensorDataRequest struct {
 
 // Used in gRPC
 func (h *Handler) SendSensorData(ctx context.Context, req *pb.SensorData) (*pb.SensorResponse, error) {
+	fmt.Printf("%+v\n", req)
 	err := h.service.SaveData(float64(req.Value), req.Type, req.Id1, int(req.Id2), req.Timestamp)
 	if err != nil {
 		return &pb.SensorResponse{Status: "error"}, err

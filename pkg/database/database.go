@@ -2,15 +2,28 @@ package database
 
 import (
 	"database/sql"
-	_ "github.com/go-sql-driver/mysql"
+	"fmt"
 	"log"
+	"net/url"
+	"os"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var db *sql.DB
 
 func Connect() *sql.DB {
 	var err error
-	db, err = sql.Open("mysql", "root:root@tcp(127.0.0.1:3306)/sensordb")
+	dbHost := os.Getenv("DB_HOST")
+	if dbHost == "" {
+		dbHost = "localhost"
+	}
+	connection := fmt.Sprintf("root:root@tcp(%s:3306)/sensordb", dbHost)
+	val := url.Values{}
+	val.Add("parseTime", "1")
+	val.Add("loc", "Asia/Jakarta")
+	dsn := fmt.Sprintf("%s?%s", connection, val.Encode())
+	db, err = sql.Open("mysql", dsn)
 	if err != nil {
 		log.Fatal(err)
 	}
