@@ -5,7 +5,7 @@ import (
 )
 
 type SensorUsecase interface {
-	Fetch(id1, id2, start, end string, page, pageSize int) ([]domain.SensorData, error)
+	Fetch(id1, id2, start, end string, pagination *domain.Pagination) ([]domain.SensorData, error)
 	Delete(id1, id2, start, end string) (int64, error)
 	Update(data domain.SensorData, id1, id2, start, end string) (int64, error)
 }
@@ -20,9 +20,8 @@ func NewSensorUsecase(repo domain.SensorRepository) SensorUsecase {
 	}
 }
 
-func (s *sensorUsecase) Fetch(id1, id2, start, end string, page, pageSize int) ([]domain.SensorData, error) {
-	offset := (page - 1) * pageSize
-	return s.sensorRepo.Fetch(id1, id2, start, end, pageSize, offset)
+func (s *sensorUsecase) Fetch(id1, id2, start, end string, pagination *domain.Pagination) ([]domain.SensorData, error) {
+	return s.sensorRepo.Fetch(id1, id2, start, end, pagination)
 }
 
 func (s *sensorUsecase) Delete(id1, id2, start, end string) (int64, error) {

@@ -2,6 +2,8 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
 
 	"github.com/funthere/pokemon/internal/service-b/domain"
 )
@@ -14,8 +16,15 @@ func NewMysqlSensorRepository(Conn *sql.DB) domain.SensorRepository {
 	return &mysqlSensorRepository{Conn}
 }
 
-func (m *mysqlSensorRepository) Fetch(id1, id2, start, end string, limit, offset int) ([]domain.SensorData, error) {
-	query := "SELECT id, value, type, id1, id2, timestamp FROM sensor_data WHERE 1=1"
+func (m *mysqlSensorRepository) Save(value float64, typ, id1 string, id2 int, timestamp string) error {
+	query := "INSERT INTO sensor_data (value, type, id1, id2, timestamp) VALUES (?, ?, ?, ?, ?)"
+	_, err := m.Conn.Exec(query, value, typ, id1, id2, timestamp)
+	return err
+}
+
+func (m *mysqlSensorRepository) Fetch(id1, id2, start, end string, pagination *domain.Pagination) ([]domain.SensorData, error) {
+	// query := "SELECT id, value, type, id1, id2, timestamp FROM sensor_data WHERE 1=1"
+	query := "SELECT count(id) FROM sensor_data WHERE 1=1"
 	args := make([]any, 0)
 
 	if id1 != "" {
@@ -30,10 +39,22 @@ func (m *mysqlSensorRepository) Fetch(id1, id2, start, end string, limit, offset
 		query += " AND timestamp BETWEEN ? AND ?"
 		args = append(args, start, end)
 	}
-	args = append(args, limit, offset)
+
+	// Pagination
+	fmt.Println("===", query, args)
+	err := m.Conn.QueryRow(query, args...).Scan(&pagination.TotalRows)
+	if err != nil {
+		return nil, err
+	}
+	pagination.CalculateTotalPages()
+
+	// Datas
+	query = strings.Replace(query, "count(id)",
+		"id, value, type, id1, id2, timestamp ", 1)
+	args = append(args, pagination.Size, pagination.GetOffset())
 	query += " LIMIT ? OFFSET ?"
 
-	// fmt.Println("===", query, args)
+	fmt.Println("===", query, args)
 	rows, err := m.Conn.Query(query, args...)
 	if err != nil {
 		return nil, err

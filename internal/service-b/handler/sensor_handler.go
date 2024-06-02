@@ -30,14 +30,22 @@ func (h *SensorHandler) Fetch(c echo.Context) error {
 	start := c.QueryParam("start")
 	end := c.QueryParam("end")
 	page, _ := strconv.Atoi(c.QueryParam("page"))
-	pageSize, _ := strconv.Atoi(c.QueryParam("size"))
+	size, _ := strconv.Atoi(c.QueryParam("size"))
+	pagination := domain.Pagination{
+		Page: uint(page),
+		Size: uint(size),
+	}
 
-	data, err := h.SensorUsecase.Fetch(id1, id2, start, end, page, pageSize)
+	data, err := h.SensorUsecase.Fetch(id1, id2, start, end, &pagination)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
+	res := map[string]any{
+		"pagination": pagination,
+		"data":       data,
+	}
 
-	return c.JSON(http.StatusOK, data)
+	return c.JSON(http.StatusOK, res)
 }
 
 func (h *SensorHandler) Delete(c echo.Context) error {
