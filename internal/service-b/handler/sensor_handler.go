@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/funthere/pokemon/internal/service-b/domain"
+	"github.com/funthere/pokemon/internal/service-b/middleware"
 	"github.com/funthere/pokemon/internal/service-b/usecase"
 
 	"github.com/labstack/echo/v4"
@@ -18,6 +19,9 @@ func NewSensorHandler(e *echo.Echo, us usecase.SensorUsecase) {
 	handler := &SensorHandler{
 		SensorUsecase: us,
 	}
+
+	// Basic Auth Middleware
+	e.Use(middleware.BasicAuth("admin", "password"))
 
 	e.GET("/data", handler.Fetch)
 	e.DELETE("/data", handler.Delete)

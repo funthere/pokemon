@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 	"strings"
 
 	"github.com/funthere/pokemon/internal/service-b/domain"
@@ -23,7 +22,6 @@ func (m *mysqlSensorRepository) Save(value float64, typ, id1 string, id2 int, ti
 }
 
 func (m *mysqlSensorRepository) Fetch(id1, id2, start, end string, pagination *domain.Pagination) ([]domain.SensorData, error) {
-	// query := "SELECT id, value, type, id1, id2, timestamp FROM sensor_data WHERE 1=1"
 	query := "SELECT count(id) FROM sensor_data WHERE 1=1"
 	args := make([]any, 0)
 
@@ -41,7 +39,6 @@ func (m *mysqlSensorRepository) Fetch(id1, id2, start, end string, pagination *d
 	}
 
 	// Pagination
-	fmt.Println("===", query, args)
 	err := m.Conn.QueryRow(query, args...).Scan(&pagination.TotalRows)
 	if err != nil {
 		return nil, err
@@ -54,7 +51,6 @@ func (m *mysqlSensorRepository) Fetch(id1, id2, start, end string, pagination *d
 	args = append(args, pagination.Size, pagination.GetOffset())
 	query += " LIMIT ? OFFSET ?"
 
-	fmt.Println("===", query, args)
 	rows, err := m.Conn.Query(query, args...)
 	if err != nil {
 		return nil, err
