@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/funthere/pokemon/internal/service-a/service"
@@ -17,5 +18,6 @@ func SetFrequency(c echo.Context) error {
 		return err
 	}
 	service.UpdateFrequency(req.Frequency)
+	fmt.Println("======Freq updated=====")
 	return c.JSON(http.StatusOK, map[string]string{"status": "frequency updated"})
 }

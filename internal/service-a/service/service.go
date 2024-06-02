@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"time"
 
 	pb "github.com/funthere/pokemon/proto"
@@ -18,7 +19,7 @@ type SensorData struct {
 	Timestamp time.Time
 }
 
-var frequency int = 1000 // = 1 second
+var frequency int = 1 // = 1 second
 
 func UpdateFrequency(newFrequency int) {
 	frequency = newFrequency
@@ -28,11 +29,18 @@ func GetFrequency() int {
 	return frequency
 }
 
+func GetType() string {
+	if os.Getenv("SENSOR_TYPE") != "" {
+		return os.Getenv("SENSOR_TYPE")
+	}
+	return "temperature"
+}
+
 func GenerateData(client pb.SensorServiceClient) {
 	for {
 		data := &pb.SensorData{
 			Value:     rand.Float32() * 100,
-			Type:      "temperature",
+			Type:      GetType(),
 			Id1:       string(randomUppercaseLetter()),
 			Id2:       int32(rand.Intn(100)),
 			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
@@ -44,7 +52,9 @@ func GenerateData(client pb.SensorServiceClient) {
 		}
 
 		fmt.Printf("%+v ==> %s\n", data, res.GetStatus())
-		time.Sleep(time.Millisecond * time.Duration(GetFrequency()))
+
+		sleep := 1000 / GetFrequency() // Frequency per second
+		time.Sleep(time.Millisecond * time.Duration(sleep))
 	}
 }
 func randomUppercaseLetter() rune {

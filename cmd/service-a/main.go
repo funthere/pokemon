@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"net/http"
+	"os"
+	"strconv"
 
 	"github.com/funthere/pokemon/internal/service-a/handler"
 	"github.com/funthere/pokemon/internal/service-a/service"
@@ -21,6 +23,11 @@ func main() {
 	defer conn.Close()
 	client := pb.NewSensorServiceClient(conn)
 
+	if os.Getenv("FREQUENCY") != "" {
+		freq, _ := strconv.Atoi(os.Getenv("FREQUENCY"))
+		service.UpdateFrequency(freq)
+	}
+
 	// Generate sensor's data and send them to client
 	go service.GenerateData(client)
 
@@ -28,7 +35,7 @@ func main() {
 	e := echo.New()
 	e.POST("/set-frequency", handler.SetFrequency)
 	e.GET("/", func(c echo.Context) error {
-		return c.String(http.StatusOK, "Hello, World!")
+		return c.String(http.StatusOK, "Hello from "+c.RealIP())
 	})
 
 	e.Logger.Fatal(e.Start(":8081"))

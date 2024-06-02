@@ -2,9 +2,11 @@ version: '3'
 
 services:
   mysql:
-    image: mysql:latest
+    image: mysql:5.7
+    platform: linux/x86_64
     container_name: "pokemon.db"
     restart: always
+    command: --default-authentication-plugin=mysql_native_password
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: sensordb
@@ -13,7 +15,7 @@ services:
     expose:
       - "3306"
     volumes:
-      - db-data1:/var/lib/mysql
+      - ./tmp/db-data:/var/lib/mysql
       - ./init:/docker-entrypoint-initdb.d
 
   service-a:
@@ -21,12 +23,22 @@ services:
       context: .
       dockerfile: ./build/docker/Dockerfile.service-a
     restart: always
-    ports:
-      - "8081:8081"
     environment:
-      - FREQUENCY=1000
+      - FREQUENCY=1
+      - SENSOR_TYPE=temp
     depends_on:
       - service-b
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: on-failure
+    expose:
+      - "8081"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.service-a.rule=Host(`service-a.docker.localhost`)"
+      # - "traefik.http.routers.service-a.rule=PathPrefix(`/service-a`)"
+      - "traefik.http.services.service-a.loadbalancer.server.port=8081"
 
   service-b:
     build:
@@ -44,6 +56,14 @@ services:
     depends_on:
       - mysql
 
-
-volumes:
-  db-data1:
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
