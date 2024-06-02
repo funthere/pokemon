@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"strings"
 
 	"github.com/funthere/pokemon/internal/service-b/domain"
@@ -39,6 +40,7 @@ func (m *mysqlSensorRepository) Fetch(id1, id2, start, end string, pagination *d
 	}
 
 	// Pagination
+	pagination.Init()
 	err := m.Conn.QueryRow(query, args...).Scan(&pagination.TotalRows)
 	if err != nil {
 		return nil, err
@@ -86,6 +88,10 @@ func (m *mysqlSensorRepository) Delete(id1, id2, start, end string) (int64, erro
 		args = append(args, start, end)
 	}
 
+	if len(args) == 0 {
+		return 0, errors.New("Need filter to delete data.")
+	}
+
 	res, err := m.Conn.Exec(query, args...)
 	if err != nil {
 		return 0, err
@@ -99,7 +105,7 @@ func (m *mysqlSensorRepository) Delete(id1, id2, start, end string) (int64, erro
 	return rowsAffected, nil
 }
 
-func (m *mysqlSensorRepository) Update(data domain.SensorData, id1, id2, start, end string) (int64, error) {
+func (m *mysqlSensorRepository) Update(data domain.SensorDataUpdateReq, id1, id2, start, end string) (int64, error) {
 	query := "UPDATE sensor_data SET value = ? WHERE 1=1"
 	args := []any{data.SensorValue}
 
@@ -114,6 +120,10 @@ func (m *mysqlSensorRepository) Update(data domain.SensorData, id1, id2, start, 
 	if start != "" && end != "" {
 		query += " AND timestamp BETWEEN ? AND ?"
 		args = append(args, start, end)
+	}
+
+	if len(args) == 1 {
+		return 0, errors.New("Need filter param to update data.")
 	}
 
 	res, err := m.Conn.Exec(query, args...)

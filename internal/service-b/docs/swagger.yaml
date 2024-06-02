@@ -1,0 +1,144 @@
+basePath: /
+definitions:
+  domain.SensorData:
+    properties:
+      id:
+        type: integer
+      id1:
+        type: string
+      id2:
+        type: integer
+      timestamp:
+        type: string
+      type:
+        type: string
+      value:
+        type: number
+    type: object
+  domain.SensorDataUpdateReq:
+    properties:
+      value:
+        type: number
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  description: This is the API documentation for Microservice B
+  title: Microservice B API
+  version: "1.0"
+paths:
+  /data:
+    delete:
+      consumes:
+      - application/json
+      description: Delete sensor data by ID and timestamp
+      parameters:
+      - description: ID1
+        in: query
+        name: id1
+        type: string
+      - description: ID2
+        in: query
+        name: id2
+        type: string
+      - description: Start Time
+        in: query
+        name: start
+        type: string
+      - description: End Time
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+      summary: Delete sensor data
+      tags:
+      - Sensor
+    get:
+      consumes:
+      - application/json
+      description: Get sensor data by ID and timestamp
+      parameters:
+      - description: ID1
+        in: query
+        name: id1
+        type: string
+      - description: ID2
+        in: query
+        name: id2
+        type: string
+      - description: Start Time
+        in: query
+        name: start
+        type: string
+      - description: End Time
+        in: query
+        name: end
+        type: string
+      - description: Page number
+        in: query
+        name: page
+        type: integer
+      - description: Page size
+        in: query
+        name: size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/domain.SensorData'
+            type: array
+      summary: Fetch sensor data
+      tags:
+      - Sensor
+    put:
+      consumes:
+      - application/json
+      description: Update sensor data by ID and timestamp
+      parameters:
+      - description: ID1
+        in: query
+        name: id1
+        type: string
+      - description: ID2
+        in: query
+        name: id2
+        type: string
+      - description: Start Time
+        in: query
+        name: start
+        type: string
+      - description: End Time
+        in: query
+        name: end
+        type: string
+      - description: Sensor Data
+        in: body
+        name: data
+        required: true
+        schema:
+          $ref: '#/definitions/domain.SensorDataUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: integer
+            type: object
+      summary: Update sensor data
+      tags:
+      - Sensor
+swagger: "2.0"

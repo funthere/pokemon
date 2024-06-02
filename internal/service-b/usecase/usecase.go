@@ -7,7 +7,7 @@ import (
 type SensorUsecase interface {
 	Fetch(id1, id2, start, end string, pagination *domain.Pagination) ([]domain.SensorData, error)
 	Delete(id1, id2, start, end string) (int64, error)
-	Update(data domain.SensorData, id1, id2, start, end string) (int64, error)
+	Update(data domain.SensorDataUpdateReq, id1, id2, start, end string) (int64, error)
 }
 
 type sensorUsecase struct {
@@ -28,6 +28,6 @@ func (s *sensorUsecase) Delete(id1, id2, start, end string) (int64, error) {
 	return s.sensorRepo.Delete(id1, id2, start, end)
 }
 
-func (s *sensorUsecase) Update(data domain.SensorData, id1, id2, start, end string) (int64, error) {
+func (s *sensorUsecase) Update(data domain.SensorDataUpdateReq, id1, id2, start, end string) (int64, error) {
 	return s.sensorRepo.Update(data, id1, id2, start, end)
 }

@@ -5,30 +5,45 @@ import (
 	"strconv"
 
 	"github.com/funthere/pokemon/internal/service-b/domain"
-	"github.com/funthere/pokemon/internal/service-b/middleware"
 	"github.com/funthere/pokemon/internal/service-b/usecase"
+
+	_ "github.com/funthere/pokemon/internal/service-b/docs" // import generated docs
 
 	"github.com/labstack/echo/v4"
 )
 
-type SensorHandler struct {
+type SensorHandler interface {
+	Fetch(c echo.Context) error
+	Delete(c echo.Context) error
+	Update(c echo.Context) error
+}
+
+type sensorHandler struct {
 	SensorUsecase usecase.SensorUsecase
 }
 
-func NewSensorHandler(e *echo.Echo, us usecase.SensorUsecase) {
-	handler := &SensorHandler{
-		SensorUsecase: us,
+// NewSensorHandler creates a new sensor handler
+func NewSensorHandler(sensorUsecase usecase.SensorUsecase) SensorHandler {
+	return &sensorHandler{
+		SensorUsecase: sensorUsecase,
 	}
-
-	// Basic Auth Middleware
-	e.Use(middleware.BasicAuth("admin", "password"))
-
-	e.GET("/data", handler.Fetch)
-	e.DELETE("/data", handler.Delete)
-	e.PUT("/data", handler.Update)
 }
 
-func (h *SensorHandler) Fetch(c echo.Context) error {
+// Fetch retrieves sensor data
+// @Summary Fetch sensor data
+// @Description Get sensor data by ID and timestamp
+// @Tags Sensor
+// @Accept  json
+// @Produce  json
+// @Param id1 query string false "ID1"
+// @Param id2 query string false "ID2"
+// @Param start query string false "Start Time"
+// @Param end query string false "End Time"
+// @Param page query int false "Page number"
+// @Param size query int false "Page size"
+// @Success 200 {array} domain.SensorData
+// @Router /data [get]
+func (h *sensorHandler) Fetch(c echo.Context) error {
 	id1 := c.QueryParam("id1")
 	id2 := c.QueryParam("id2")
 	start := c.QueryParam("start")
@@ -52,7 +67,19 @@ func (h *SensorHandler) Fetch(c echo.Context) error {
 	return c.JSON(http.StatusOK, res)
 }
 
-func (h *SensorHandler) Delete(c echo.Context) error {
+// Delete removes sensor data
+// @Summary Delete sensor data
+// @Description Delete sensor data by ID and timestamp
+// @Tags Sensor
+// @Accept  json
+// @Produce  json
+// @Param id1 query string false "ID1"
+// @Param id2 query string false "ID2"
+// @Param start query string false "Start Time"
+// @Param end query string false "End Time"
+// @Success 200 {object} map[string]int64
+// @Router /data [delete]
+func (h *sensorHandler) Delete(c echo.Context) error {
 	id1 := c.QueryParam("id1")
 	id2 := c.QueryParam("id2")
 	start := c.QueryParam("start")
@@ -66,13 +93,26 @@ func (h *SensorHandler) Delete(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]int64{"deleted": rowsAffected})
 }
 
-func (h *SensorHandler) Update(c echo.Context) error {
+// Update modifies sensor data
+// @Summary Update sensor data
+// @Description Update sensor data by ID and timestamp
+// @Tags Sensor
+// @Accept  json
+// @Produce  json
+// @Param id1 query string false "ID1"
+// @Param id2 query string false "ID2"
+// @Param start query string false "Start Time"
+// @Param end query string false "End Time"
+// @Param data body domain.SensorDataUpdateReq true "Sensor Data"
+// @Success 200 {object} map[string]int64
+// @Router /data [put]
+func (h *sensorHandler) Update(c echo.Context) error {
 	id1 := c.QueryParam("id1")
 	id2 := c.QueryParam("id2")
 	start := c.QueryParam("start")
 	end := c.QueryParam("end")
 
-	var data domain.SensorData
+	var data domain.SensorDataUpdateReq
 	if err := c.Bind(&data); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

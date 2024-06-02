@@ -4,16 +4,20 @@ import (
 	"log"
 	"net"
 
+	_ "github.com/funthere/pokemon/internal/service-b/docs" // import generated docs
 	"github.com/funthere/pokemon/internal/service-b/handler"
 	"github.com/funthere/pokemon/internal/service-b/infrastructure"
 	"github.com/funthere/pokemon/internal/service-b/repository"
 	"github.com/funthere/pokemon/internal/service-b/usecase"
 	pb "github.com/funthere/pokemon/proto"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
 	"google.golang.org/grpc"
 )
 
+// @title Microservice B API
+// @version 1.0
+// @description This is the API documentation for Microservice B
+// @host localhost:8082
+// @BasePath /
 func main() {
 	// REST API
 	db := infrastructure.NewMysqlDB()
@@ -21,12 +25,7 @@ func main() {
 
 	sensorRepo := repository.NewMysqlSensorRepository(db)
 	sensorUsecase := usecase.NewSensorUsecase(sensorRepo)
-	e := echo.New()
-	e.Use(middleware.Logger())
-	e.Use(middleware.Recover())
-	e.Use(middleware.CORS())
-
-	handler.NewSensorHandler(e, sensorUsecase)
+	e := infrastructure.NewRouter(sensorUsecase)
 
 	go func() {
 		e.Logger.Fatal(e.Start(":8082"))

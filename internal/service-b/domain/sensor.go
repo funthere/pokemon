@@ -18,7 +18,11 @@ type SensorRepository interface {
 	Save(value float64, typ, id1 string, id2 int, timestamp string) error
 	Fetch(id1, id2, start, end string, pagination *Pagination) ([]SensorData, error)
 	Delete(id1, id2, start, end string) (int64, error)
-	Update(data SensorData, id1, id2, start, end string) (int64, error)
+	Update(data SensorDataUpdateReq, id1, id2, start, end string) (int64, error)
+}
+
+type SensorDataUpdateReq struct {
+	SensorValue float64 `json:"value"`
 }
 
 type Pagination struct {
@@ -28,6 +32,14 @@ type Pagination struct {
 	TotalRows  uint `json:"total_rows"`
 }
 
+func (p *Pagination) Init() {
+	if p.Page == 0 {
+		p.Page = 1
+	}
+	if p.Size == 0 {
+		p.Size = 10
+	}
+}
 func (p *Pagination) GetOffset() (offset uint) {
 	offset = (p.Page - 1) * p.Size
 	return
