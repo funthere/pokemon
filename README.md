@@ -22,7 +22,9 @@ This project is a microservice-based backend system for managing sensor data usi
 
 ## API Documentation
 
-Swagger documentation is available at `http://localhost:8082/swagger/index.html`.
+Swagger documentation is available at [http://localhost:8082/swagger/index.html](`http://localhost:8082/swagger/index.html`).
+
+Postman documentation is available at [https://documenter.getpostman.com/view/718196/2sA3Qwc9kZ](`https://documenter.getpostman.com/view/718196/2sA3Qwc9kZ`).
 ## Architecture Diagram
 
 ![Architecture Diagram](./docs/arc.png)
