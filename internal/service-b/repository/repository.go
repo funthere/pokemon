@@ -58,3 +58,91 @@ func (r *Repository) Save(value float64, typ, id1 string, id2 int, timestamp str
 	_, err := r.db.Exec(query, value, typ, id1, id2, timestamp)
 	return err
 }
+
+func (r *Repository) FindByIDAndTime(id1, id2, start, end, page, size string) ([]SensorData, error) {
+	query := "SELECT value, type, id1, id2, timestamp FROM sensor_data WHERE id1 = ? AND id2 = ? AND timestamp BETWEEN ? AND ? LIMIT ?, ?"
+	rows, err := r.db.Query(query, id1, id2, start, end, page, size)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var data []SensorData
+	for rows.Next() {
+		var d SensorData
+		if err := rows.Scan(&d.Value, &d.Type, &d.ID1, &d.ID2, &d.Timestamp); err != nil {
+			return nil, err
+		}
+		data = append(data, d)
+	}
+	return data, nil
+}
+
+func (r *Repository) DeleteByIDAndTime(id1, id2, start, end string) error {
+	query := "DELETE FROM sensor_data WHERE id1 = ? AND id2 = ? AND timestamp BETWEEN ? AND ?"
+	_, err := r.db.Exec(query, id1, id2, start, end)
+	return err
+}
+
+func (r *Repository) Update(value float64, typ, id1 string, id2 int, timestamp string) error {
+	query := "UPDATE sensor_data SET value = ?, type = ?, timestamp = ? WHERE id1 = ? AND id2 = ?"
+	_, err := r.db.Exec(query, value, typ, timestamp, id1, id2)
+	return err
+}
+
+func (r *Repository) FindByIDCombination(id1, id2 string) ([]SensorData, error) {
+	query := "SELECT value, type, id1, id2, timestamp FROM sensor_data WHERE id1 = ? AND id2 = ?"
+	rows, err := r.db.Query(query, id1, id2)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var data []SensorData
+	for rows.Next() {
+		var d SensorData
+		if err := rows.Scan(&d.Value, &d.Type, &d.ID1, &d.ID2, &d.Timestamp); err != nil {
+			return nil, err
+		}
+		data = append(data, d)
+	}
+	return data, nil
+}
+
+func (r *Repository) FindByDuration(start, end string) ([]SensorData, error) {
+	query := "SELECT value, type, id1, id2, timestamp FROM sensor_data WHERE timestamp BETWEEN ? AND ?"
+	rows, err := r.db.Query(query, start, end)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var data []SensorData
+	for rows.Next() {
+		var d SensorData
+		if err := rows.Scan(&d.Value, &d.Type, &d.ID1, &d.ID2, &d.Timestamp); err != nil {
+			return nil, err
+		}
+		data = append(data, d)
+	}
+	return data, nil
+}
+
+func (r *Repository) FindByIDAndTimestamp(id1, id2, start, end string) ([]SensorData, error) {
+	query := "SELECT value, type, id1, id2, timestamp FROM sensor_data WHERE id1 = ? AND id2 = ? AND timestamp BETWEEN ? AND ?"
+	rows, err := r.db.Query(query, id1, id2, start, end)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var data []SensorData
+	for rows.Next() {
+		var d SensorData
+		if err := rows.Scan(&d.Value, &d.Type, &d.ID1, &d.ID2, &d.Timestamp); err != nil {
+			return nil, err
+		}
+		data = append(data, d)
+	}
+	return data, nil
+}

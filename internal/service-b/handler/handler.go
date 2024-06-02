@@ -4,9 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"net/http"
 
-	"github.com/funthere/pokemon/helper"
 	"github.com/funthere/pokemon/internal/service-b/service"
 	pb "github.com/funthere/pokemon/proto"
 	"github.com/labstack/echo/v4"
@@ -17,7 +15,7 @@ type Handler struct {
 	pb.UnimplementedSensorServiceServer
 }
 
-func NewHandler(db *sql.DB) *Handler {
+func NewGrpcHandler(db *sql.DB) *Handler {
 	return &Handler{
 		service: service.NewService(db),
 	}
@@ -41,13 +39,10 @@ func (h *Handler) SendSensorData(ctx context.Context, req *pb.SensorData) (*pb.S
 	return &pb.SensorResponse{Status: "data received"}, nil
 }
 
-func (h *Handler) GetData(c echo.Context) error {
-	page := helper.StringToUint32(c.QueryParam("page"))
-	size := helper.StringToUint32(c.QueryParam("size"))
-
-	data, err := h.service.Fetch(page, size)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": err.Error()})
+// Basic auth validator
+func BasicAuthValidator(username, password string, c echo.Context) (bool, error) {
+	if username == "admin" && password == "password" {
+		return true, nil
 	}
-	return c.JSON(http.StatusOK, data)
+	return false, nil
 }

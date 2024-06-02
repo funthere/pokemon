@@ -33,7 +33,7 @@ func GenerateData(client pb.SensorServiceClient) {
 		data := &pb.SensorData{
 			Value:     rand.Float32() * 100,
 			Type:      "temperature",
-			Id1:       "SENSOR_A",
+			Id1:       string(randomUppercaseLetter()),
 			Id2:       int32(rand.Intn(100)),
 			Timestamp: time.Now().Format("2006-01-02 15:04:05"),
 		}
@@ -46,4 +46,7 @@ func GenerateData(client pb.SensorServiceClient) {
 		fmt.Printf("%+v ==> %s\n", data, res.GetStatus())
 		time.Sleep(time.Millisecond * time.Duration(GetFrequency()))
 	}
+}
+func randomUppercaseLetter() rune {
+	return rune('A' + rand.Intn('Z'-'A'+1))
 }
